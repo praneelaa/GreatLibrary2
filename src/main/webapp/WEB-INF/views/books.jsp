@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
+
+
 <div class="logo-banner">
     <img src="https://i.pinimg.com/originals/38/4e/c7/384ec74949c68b3829d34a3c4e22dcc3.jpg" alt="Ancient Library Logo" class="logo-img">
     <h1 class="site-title">The Grand Ancient Library</h1>
@@ -37,8 +39,8 @@
     </c:if>
 
     <div style="margin-bottom: 20px;">
-        <a href="/add" class="btn">➕ Add Book</a>
-        <a href="/home" class="btn">🏛 Back to Library Hall</a>
+        <a href="/add" class="btn"> Add Book</a>
+        <a href="/home" class="btn"> Back to Library Hall</a>
     </div>
     
     
@@ -75,6 +77,7 @@
     </table>
 </div>
 
+<iframe src="${pageContext.request.contextPath}/music" style="display:none;" allow="autoplay"></iframe>
 
 </body>
 </html>

@@ -32,13 +32,14 @@
             <th>Price</th>
             <th>Stock</th>
             <th>Add to Cart</th>
+            <th>⭐ Rate</th> <!-- New column -->
         </tr>
         <c:forEach items="${bookList}" var="b">
             <tr>
                 <td>${b.title}</td>
                 <td>${b.author}</td>
                 <td>${b.publisher}</td>
-                <td>₹${b.price}</td>
+                <td>${b.price}</td>
                 <td style="color: ${b.stock <= 2 ? 'red' : 'black'};">
                     ${b.stock}
                     <c:if test="${b.stock <= 2}">(Low!)</c:if>
@@ -50,6 +51,9 @@
                         <button type="submit">Add</button>
                     </form>
                 </td>
+                <td>
+                    <a href="${pageContext.request.contextPath}/catalog/details/${b.id}" class="btn"> Rate</a>
+                </td>
             </tr>
         </c:forEach>
     </table>
@@ -58,6 +62,8 @@
     <a href="/cart/view" class="btn">View Cart</a>
     <a href="/home" class="btn">Back to Home</a>
 </div>
+
+<iframe src="${pageContext.request.contextPath}/music" style="display:none;" allow="autoplay"></iframe>
 
 </body>
 </html>

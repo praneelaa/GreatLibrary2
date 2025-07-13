@@ -7,12 +7,14 @@
     
 </head>
 <body>
+
+
 <div class="logo-banner">
     <img src="https://i.pinimg.com/originals/38/4e/c7/384ec74949c68b3829d34a3c4e22dcc3.jpg" alt="Ancient Library Logo" class="logo-img">
     <h1 class="site-title">The Grand Ancient Library</h1>
 </div>
 <div class="container">
-    <h2>🛒 Your Cart</h2>
+    <h2> Your Cart</h2>
 
     <table border="1">
         <tr>
@@ -20,7 +22,7 @@
             <th>Price</th>
             <th>Quantity</th>
             <th>Total</th>
-            <th>Action</th> <!-- Remove Button Column -->
+            <th>Action</th>
         </tr>
 
         <c:set var="total" value="0" />
@@ -30,11 +32,11 @@
                 <td>₹${entry.book.price}</td>
                 <td>${entry.quantity}</td>
                 <td>
-                    ₹<c:out value="${entry.book.price * entry.quantity}" />
+                    <c:out value="${entry.book.price * entry.quantity}" />
                     <c:set var="total" value="${total + (entry.book.price * entry.quantity)}" />
                 </td>
                 <td>
-                    <a href="/cart/remove/${entry.cartId}" class="btn" onclick="return confirm('Remove this book from cart?')">❌ Remove</a>
+                    <a href="/cart/remove/${entry.cartId}" class="btn" onclick="return confirm('Remove this book from cart?')">Remove</a>
                 </td>
             </tr>
         </c:forEach>
@@ -46,8 +48,10 @@
     </table>
 
     <br>
-    <a href="/cart/thankyou" class="btn">🧾 Checkout</a>
-    <a href="/catalog" class="btn">← Continue Shopping</a>
+    <a href="/cart/thankyou" class="btn">Checkout</a>
+    <a href="/catalog" class="btn"> Continue Shopping</a>
 </div>
+<iframe src="${pageContext.request.contextPath}/music" style="display:none;" allow="autoplay"></iframe>
+
 </body>
 </html>

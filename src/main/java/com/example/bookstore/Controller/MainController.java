@@ -3,9 +3,11 @@ package com.example.bookstore.Controller;
 import com.example.bookstore.Model.BookModel;
 import com.example.bookstore.Model.Cart;
 import com.example.bookstore.Model.CartDetail;
+import com.example.bookstore.Model.Rating;
 import com.example.bookstore.Model.User;
 import com.example.bookstore.Repository.BookRepo;
 import com.example.bookstore.Repository.CartRepository;
+import com.example.bookstore.Repository.RatingRepository;
 import com.example.bookstore.Repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -32,7 +34,7 @@ public class MainController {
     // ---------- LOGIN ----------
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login";
+        return "views/login";
     }
 
     @PostMapping("/login")
@@ -46,24 +48,24 @@ public class MainController {
 
         if (user != null) {
             session.setAttribute("user", user);
-            return role.equals("admin") ? "redirect:/home" : "redirect:/home";
+            return role.equals("admin") ? "redirect:/views/home" : "redirect:/views/home";
         } else {
             model.addAttribute("error", "Invalid credentials for " + role + ".");
-            return "login";
+            return "views/login";
         }
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "logout";  // This returns logout.jsp
+        return "views/logout";  // This returns logout.jsp
     }
 
     // ---------- REGISTRATION ----------
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
-        return "register";
+        return "views/register";
     }
 
     @PostMapping("/register")
@@ -71,14 +73,14 @@ public class MainController {
         User existingUser = userRepo.findByUsername(user.getUsername());
         if (existingUser != null) {
             model.addAttribute("error", "Username already exists!");
-            return "register";
+            return "views/register";
         }
 
         user.setRole("user");
         userRepo.save(user);
 
         model.addAttribute("success", "Registration successful. Please login.");
-        return "login";
+        return "views/login";
     }
 
     // ---------- HOME ----------
@@ -91,7 +93,7 @@ public class MainController {
         }
 
         model.addAttribute("user", user); // Used in home.jsp as ${user.username}, ${user.role}
-        return "home";
+        return "views/home";
     }
 
     // ---------- BOOK MANAGEMENT ----------
@@ -103,13 +105,13 @@ public class MainController {
             BookModel randomBook = allBooks.get(new Random().nextInt(allBooks.size()));
             model.addAttribute("featured", randomBook);
         }
-        return "books";
+        return "views/books";
     }
 
     @GetMapping("/add")
     public String showForm(Model model) {
         model.addAttribute("book", new BookModel());
-        return "add";
+        return "views/add";
     }
 
     @PostMapping("/save")
@@ -121,7 +123,7 @@ public class MainController {
     @GetMapping("/edit/{id}")
     public String editBook(@PathVariable int id, Model model) {
         model.addAttribute("book", bookRepo.findById(id).orElse(null));
-        return "edit";
+        return "views/edit";
     }
 
     @PostMapping("/update")
@@ -142,7 +144,7 @@ public class MainController {
         model.addAttribute("bookList", result);
         model.addAttribute("keyword", keyword);
         model.addAttribute("notFound", result.isEmpty()); 
-        return "books";
+        return "views/books";
     }
 
     // ---------- CATALOG FOR USERS ----------
@@ -150,7 +152,7 @@ public class MainController {
     public String showCatalog(Model model) {
         List<BookModel> books = bookRepo.findAll();
         model.addAttribute("bookList", books);
-        return "catalog";
+        return "views/catalog";
     }
 
     @GetMapping("/catalog/search")
@@ -158,7 +160,7 @@ public class MainController {
         List<BookModel> matchedBooks = bookRepo.findByTitleContainingIgnoreCase(keyword);
         model.addAttribute("bookList", matchedBooks);
         model.addAttribute("keyword", keyword);
-        return "catalog";
+        return "views/catalog";
     }
 
     // ---------- CART ----------
@@ -177,7 +179,7 @@ public class MainController {
         cartItem.setQuantity(quantity);
 
         cartRepo.save(cartItem);
-        return "redirect:/catalog";
+        return "views/success";
     }
 
     @GetMapping("/cart/view")
@@ -201,7 +203,7 @@ public class MainController {
         }
 
         model.addAttribute("cartDetails", cartDetails);
-        return "cart";
+        return "views/cart";
     }
 
     @GetMapping("/cart/remove/{id}")
@@ -224,6 +226,59 @@ public class MainController {
 
     @GetMapping("/cart/thankyou")
     public String thankYouPage() {
-        return "thankyou";
+        return "views/thankyou";
     }
+    
+    @GetMapping("/music")
+    public String playMusic() {
+        return "views/music";
+    }
+    
+    @Autowired
+    private RatingRepository ratingRepo;
+
+    // --- Submit Rating ---
+    @PostMapping("/rate")
+    public String rateBook(@RequestParam int bookId,
+                           @RequestParam int stars,
+                           @RequestParam String comment,
+                           HttpSession session) {
+
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        // Prevent multiple ratings by same user
+        Rating existing = ratingRepo.findByBookIdAndUserId(bookId, user.getId());
+        if (existing != null) {
+            existing.setStars(stars);
+            existing.setComment(comment);
+            ratingRepo.save(existing);
+        } else {
+            Rating rating = new Rating();
+            rating.setBookId(bookId);
+            rating.setUserId(user.getId());
+            rating.setStars(stars);
+            rating.setComment(comment);
+            ratingRepo.save(rating);
+        }
+
+        return "redirect:/catalog/bookDetails/" + bookId;
+    }
+
+    @GetMapping("/catalog/details/{id}")
+    public String viewBookDetails(@PathVariable int id, Model model) {
+        BookModel book = bookRepo.findById(id).orElse(null);
+        if (book == null) return "redirect:/catalog";
+
+        List<Rating> ratings = ratingRepo.findByBookId(id);
+        double avgRating = ratings.stream().mapToInt(Rating::getStars).average().orElse(0.0);
+
+        model.addAttribute("book", book);
+        model.addAttribute("ratings", ratings);
+        model.addAttribute("avgRating", Math.round(avgRating * 10.0) / 10.0);
+        return "views/bookDetails";
+    }
+
+
+
 }

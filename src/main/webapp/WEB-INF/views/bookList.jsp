@@ -6,6 +6,8 @@
 
 </head>
 <body>
+
+
 <h2>Available Books</h2>
 <form action="/search" method="get">
     <input type="text" name="keyword" placeholder="Search by title">
@@ -29,4 +31,6 @@
         </tr>
     </c:forEach>
 </table>
+<iframe src="${pageContext.request.contextPath}/music" style="display:none;" allow="autoplay"></iframe>
+
 </body></html>

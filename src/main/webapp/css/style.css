@@ -209,5 +209,61 @@ input[type="number"]:focus {
     transition: background-color 0.5s ease, box-shadow 0.5s ease;
 }
 
+.book-box {
+    background: rgba(255, 248, 220, 0.9);
+    padding: 25px;
+    border: 3px solid #9c7e5c;
+    border-radius: 20px;
+    max-width: 700px;
+    margin: 40px auto;
+    box-shadow: 0 0 10px #00000055;
+    font-family: 'Crimson Text', serif;
+}
+
+.stars {
+    font-size: 20px;
+    color: #d4af37;
+}
+
+.review-box {
+    border-top: 1px solid #9c7e5c;
+    margin-top: 20px;
+    padding-top: 10px;
+}
+
+textarea {
+    width: 100%;
+    margin-top: 5px;
+    padding: 8px;
+    font-size: 16px;
+    font-family: 'Crimson Text', serif;
+    background-color: #fdf3e7;
+    border: 1px solid #a66c47;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+textarea:focus {
+    border-color: #cfa57d;
+    box-shadow: 0 0 8px #e7c4a1;
+    outline: none;
+}
+
+.book-box form button {
+    background-color: #a0522d;
+    color: white;
+    padding: 8px 16px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Crimson Text', serif;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+}
+
+.book-box form button:hover {
+    background-color: #8b4513;
+}
 
 
