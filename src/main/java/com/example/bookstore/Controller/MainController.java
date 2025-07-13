@@ -34,7 +34,7 @@ public class MainController {
     // ---------- LOGIN ----------
     @GetMapping("/login")
     public String showLoginForm() {
-        return "views/login";
+        return "login";
     }
 
     @PostMapping("/login")
@@ -48,24 +48,24 @@ public class MainController {
 
         if (user != null) {
             session.setAttribute("user", user);
-            return role.equals("admin") ? "redirect:/views/home" : "redirect:/views/home";
+            return role.equals("admin") ? "redirect:/home" : "redirect:/home";
         } else {
             model.addAttribute("error", "Invalid credentials for " + role + ".");
-            return "views/login";
+            return "login";
         }
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "views/logout";  // This returns logout.jsp
+        return "logout";  // This returns logout.jsp
     }
 
     // ---------- REGISTRATION ----------
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
-        return "views/register";
+        return "register";
     }
 
     @PostMapping("/register")
@@ -73,14 +73,14 @@ public class MainController {
         User existingUser = userRepo.findByUsername(user.getUsername());
         if (existingUser != null) {
             model.addAttribute("error", "Username already exists!");
-            return "views/register";
+            return "register";
         }
 
         user.setRole("user");
         userRepo.save(user);
 
         model.addAttribute("success", "Registration successful. Please login.");
-        return "views/login";
+        return "login";
     }
 
     // ---------- HOME ----------
@@ -93,7 +93,7 @@ public class MainController {
         }
 
         model.addAttribute("user", user); // Used in home.jsp as ${user.username}, ${user.role}
-        return "views/home";
+        return "home";
     }
 
     // ---------- BOOK MANAGEMENT ----------
@@ -105,13 +105,13 @@ public class MainController {
             BookModel randomBook = allBooks.get(new Random().nextInt(allBooks.size()));
             model.addAttribute("featured", randomBook);
         }
-        return "views/books";
+        return "books";
     }
 
     @GetMapping("/add")
     public String showForm(Model model) {
         model.addAttribute("book", new BookModel());
-        return "views/add";
+        return "add";
     }
 
     @PostMapping("/save")
@@ -123,7 +123,7 @@ public class MainController {
     @GetMapping("/edit/{id}")
     public String editBook(@PathVariable int id, Model model) {
         model.addAttribute("book", bookRepo.findById(id).orElse(null));
-        return "views/edit";
+        return "edit";
     }
 
     @PostMapping("/update")
@@ -144,7 +144,7 @@ public class MainController {
         model.addAttribute("bookList", result);
         model.addAttribute("keyword", keyword);
         model.addAttribute("notFound", result.isEmpty()); 
-        return "views/books";
+        return "books";
     }
 
     // ---------- CATALOG FOR USERS ----------
@@ -152,7 +152,7 @@ public class MainController {
     public String showCatalog(Model model) {
         List<BookModel> books = bookRepo.findAll();
         model.addAttribute("bookList", books);
-        return "views/catalog";
+        return "catalog";
     }
 
     @GetMapping("/catalog/search")
@@ -160,7 +160,7 @@ public class MainController {
         List<BookModel> matchedBooks = bookRepo.findByTitleContainingIgnoreCase(keyword);
         model.addAttribute("bookList", matchedBooks);
         model.addAttribute("keyword", keyword);
-        return "views/catalog";
+        return "catalog";
     }
 
     // ---------- CART ----------
@@ -179,7 +179,7 @@ public class MainController {
         cartItem.setQuantity(quantity);
 
         cartRepo.save(cartItem);
-        return "views/success";
+        return "success";
     }
 
     @GetMapping("/cart/view")
@@ -203,7 +203,7 @@ public class MainController {
         }
 
         model.addAttribute("cartDetails", cartDetails);
-        return "views/cart";
+        return "cart";
     }
 
     @GetMapping("/cart/remove/{id}")
@@ -226,12 +226,12 @@ public class MainController {
 
     @GetMapping("/cart/thankyou")
     public String thankYouPage() {
-        return "views/thankyou";
+        return "thankyou";
     }
     
     @GetMapping("/music")
     public String playMusic() {
-        return "views/music";
+        return "music";
     }
     
     @Autowired
@@ -242,12 +242,11 @@ public class MainController {
     public String rateBook(@RequestParam int bookId,
                            @RequestParam int stars,
                            @RequestParam String comment,
-                           HttpSession session) {
-
+                           HttpSession session,
+                           Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
 
-        // Prevent multiple ratings by same user
         Rating existing = ratingRepo.findByBookIdAndUserId(bookId, user.getId());
         if (existing != null) {
             existing.setStars(stars);
@@ -262,8 +261,11 @@ public class MainController {
             ratingRepo.save(rating);
         }
 
-        return "redirect:/catalog/bookDetails/" + bookId;
+        model.addAttribute("bookId", bookId);
+        return "ratingSuccess"; 
     }
+
+
 
     @GetMapping("/catalog/details/{id}")
     public String viewBookDetails(@PathVariable int id, Model model) {
@@ -276,7 +278,7 @@ public class MainController {
         model.addAttribute("book", book);
         model.addAttribute("ratings", ratings);
         model.addAttribute("avgRating", Math.round(avgRating * 10.0) / 10.0);
-        return "views/bookDetails";
+        return "bookDetails";
     }
 
 
