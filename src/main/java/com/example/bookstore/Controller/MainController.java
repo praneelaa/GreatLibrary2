@@ -34,7 +34,7 @@ public class MainController {
     // ---------- LOGIN ----------
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login";
+        return "views/login";
     }
 
     @PostMapping("/login")
@@ -51,21 +51,21 @@ public class MainController {
             return role.equals("admin") ? "redirect:/home" : "redirect:/home";
         } else {
             model.addAttribute("error", "Invalid credentials for " + role + ".");
-            return "login";
+            return "views/login";
         }
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "logout";  // This returns logout.jsp
+        return "views/logout";  // This returns logout.jsp
     }
 
     // ---------- REGISTRATION ----------
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
-        return "register";
+        return "views/register";
     }
 
     @PostMapping("/register")
@@ -73,14 +73,14 @@ public class MainController {
         User existingUser = userRepo.findByUsername(user.getUsername());
         if (existingUser != null) {
             model.addAttribute("error", "Username already exists!");
-            return "register";
+            return "views/register";
         }
 
         user.setRole("user");
         userRepo.save(user);
 
         model.addAttribute("success", "Registration successful. Please login.");
-        return "login";
+        return "views/login";
     }
 
     // ---------- HOME ----------
@@ -93,7 +93,7 @@ public class MainController {
         }
 
         model.addAttribute("user", user); // Used in home.jsp as ${user.username}, ${user.role}
-        return "home";
+        return "views/home";
     }
 
     // ---------- BOOK MANAGEMENT ----------
@@ -105,13 +105,13 @@ public class MainController {
             BookModel randomBook = allBooks.get(new Random().nextInt(allBooks.size()));
             model.addAttribute("featured", randomBook);
         }
-        return "books";
+        return "views/books";
     }
 
     @GetMapping("/add")
     public String showForm(Model model) {
         model.addAttribute("book", new BookModel());
-        return "add";
+        return "views/add";
     }
 
     @PostMapping("/save")
@@ -123,7 +123,7 @@ public class MainController {
     @GetMapping("/edit/{id}")
     public String editBook(@PathVariable int id, Model model) {
         model.addAttribute("book", bookRepo.findById(id).orElse(null));
-        return "edit";
+        return "views/edit";
     }
 
     @PostMapping("/update")
@@ -144,7 +144,7 @@ public class MainController {
         model.addAttribute("bookList", result);
         model.addAttribute("keyword", keyword);
         model.addAttribute("notFound", result.isEmpty()); 
-        return "books";
+        return "views/books";
     }
 
     // ---------- CATALOG FOR USERS ----------
@@ -152,7 +152,7 @@ public class MainController {
     public String showCatalog(Model model) {
         List<BookModel> books = bookRepo.findAll();
         model.addAttribute("bookList", books);
-        return "catalog";
+        return "views/catalog";
     }
 
     @GetMapping("/catalog/search")
@@ -160,7 +160,7 @@ public class MainController {
         List<BookModel> matchedBooks = bookRepo.findByTitleContainingIgnoreCase(keyword);
         model.addAttribute("bookList", matchedBooks);
         model.addAttribute("keyword", keyword);
-        return "catalog";
+        return "views/catalog";
     }
 
     // ---------- CART ----------
@@ -179,7 +179,7 @@ public class MainController {
         cartItem.setQuantity(quantity);
 
         cartRepo.save(cartItem);
-        return "success";
+        return "views/success";
     }
 
     @GetMapping("/cart/view")
@@ -203,7 +203,7 @@ public class MainController {
         }
 
         model.addAttribute("cartDetails", cartDetails);
-        return "cart";
+        return "views/cart";
     }
 
     @GetMapping("/cart/remove/{id}")
@@ -226,12 +226,12 @@ public class MainController {
 
     @GetMapping("/cart/thankyou")
     public String thankYouPage() {
-        return "thankyou";
+        return "views/thankyou";
     }
     
     @GetMapping("/music")
     public String playMusic() {
-        return "music";
+        return "views/music";
     }
     
     @Autowired
@@ -262,7 +262,7 @@ public class MainController {
         }
 
         model.addAttribute("bookId", bookId);
-        return "ratingSuccess"; 
+        return "views/ratingSuccess"; 
     }
 
 
@@ -278,7 +278,7 @@ public class MainController {
         model.addAttribute("book", book);
         model.addAttribute("ratings", ratings);
         model.addAttribute("avgRating", Math.round(avgRating * 10.0) / 10.0);
-        return "bookDetails";
+        return "views/bookDetails";
     }
 
 
